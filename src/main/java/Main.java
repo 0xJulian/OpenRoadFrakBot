@@ -1,37 +1,40 @@
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
 
 public class Main extends ListenerAdapter {
+    public static final String GuildID = "724281984893059123";
+    public static ArrayList<SubcommandData> CommandList = new ArrayList<>();
     public static void main(String[] args) throws LoginException {
-        //final JDA jda = JDABuilder.createDefault(args[0]).build();
-        //jda.addEventListener(new Main());
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
+                .addEventListeners(new FrakCommandHandler())
                 .addEventListeners(new Main())
                 .setActivity(Activity.playing("Fraktionsbot"))
                 .build();
     }
-
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-        if (event.isFromType(ChannelType.PRIVATE))
-        {
-            if(event.getAuthor().isBot()) return;
-            String[] args = event.getMessage().getContentRaw().split("\s");
-            if(!args[0].equals("!frak")) return;
-            if(args.length > 2 || args.length < 2) return;
-            MessageChannel c = event.getChannel();
-            c.sendMessage("Frak was called with argument: " + args[1]).queue();
-        }
+    public void onReady(ReadyEvent event){
+        CommandListUpdateAction commands = event.getJDA().getGuildById(GuildID).updateCommands();
+
+        commands.addCommands(
+                new CommandData("frak", "Fraktionsmanagement")
+                        .addSubcommands(createSubcommandData("help", "Zeigt alle Befehle an"))
+                        .addSubcommands(createSubcommandData("test", "description"))
+                );
+        commands.queue();
+    }
+
+    private static SubcommandData createSubcommandData(String name, String description){
+        SubcommandData data = new SubcommandData(name, description);
+        CommandList.add(data);
+        return data;
     }
 }
