@@ -14,13 +14,29 @@ public class FrakCommandHandler extends ListenerAdapter {
                 case "help":
                     helpCommand(event);
                     break;
+                case "add":
+                    addCommand(event);
+                    break;
+                case "find":
+                    findCommand(event);
+                    break;
                 default:
-                    event.reply("Ein fehler ist aufgetreten!");
+                    event.reply("Ein fehler ist aufgetreten!").queue();
                     break;
             }
         }
     }
-    //TODO write functions for each command
+
+    private static void addCommand(SlashCommandEvent event){
+        event.reply(event.getOptions().get(0).getAsString()).queue();
+        event.getChannel().sendMessage(event.getOptions().get(1).getAsMember().getId()).queue();
+        //TODO write data into db
+    }
+
+    private static void findCommand(SlashCommandEvent event){
+        //TODO select data from db
+    }
+
     private static void helpCommand(SlashCommandEvent event){
         EmbedBuilder builder = new EmbedBuilder();
         builder.setTitle("Verfügbare Befehle:");
@@ -33,4 +49,5 @@ public class FrakCommandHandler extends ListenerAdapter {
         }
         event.getChannel().sendMessage(builder.build()).queue();
     }
+    //TODO write functions for each command
 }

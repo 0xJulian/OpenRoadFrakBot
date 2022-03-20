@@ -2,7 +2,9 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -27,8 +29,16 @@ public class Main extends ListenerAdapter {
         commands.addCommands(
                 new CommandData("frak", "Fraktionsmanagement")
                         .addSubcommands(createSubcommandData("help", "Zeigt alle Befehle an"))
-                        .addSubcommands(createSubcommandData("test", "description"))
-                );
+                        .addSubcommands(createSubcommandData("add", "Fügt eine neue Fraktion zum Partnerprogramm hinzu")
+                                .addOptions(new OptionData(OptionType.STRING, "name", "Name der Fraktion").setRequired(true))
+                                .addOptions(new OptionData(OptionType.USER, "leader", "Tag des Leaders").setRequired(true))
+                                .addOptions(new OptionData(OptionType.INTEGER, "discount", "Abzug in %").setRequired(true))
+                        )
+                       .addSubcommands(createSubcommandData("find", "Sucht nach vorhandenen Fraktionen")
+                               .addOptions(new OptionData(OptionType.STRING, "name", "Name der Fraktion").setRequired(false))
+                               .addOptions(new OptionData(OptionType.USER, "leader", "Tag des Leaders").setRequired(false))
+                       )
+        );
         commands.queue();
     }
 
