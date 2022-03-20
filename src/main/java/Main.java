@@ -15,7 +15,9 @@ import java.util.ArrayList;
 public class Main extends ListenerAdapter {
     public static final String GuildID = "724281984893059123";
     public static ArrayList<SubcommandData> CommandList = new ArrayList<>();
+    public static String configPath;
     public static void main(String[] args) throws LoginException {
+        configPath = args[1];
         JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
                 .addEventListeners(new FrakCommandHandler())
                 .addEventListeners(new Main())
