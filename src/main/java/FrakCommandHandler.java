@@ -20,7 +20,19 @@ public class FrakCommandHandler extends ListenerAdapter {
                     helpCommand(event);
                     break;
                 case "add":
-                    addCommand(event);
+                    try {
+                        addCommand(event);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "find":
                     findCommand(event);
@@ -32,18 +44,13 @@ public class FrakCommandHandler extends ListenerAdapter {
         }
     }
 
-    private static void addCommand(SlashCommandEvent event){
-        event.reply(event.getOptions().get(0).getAsString()).queue();
-        event.getChannel().sendMessage(event.getOptions().get(1).getAsMember().getId()).queue();
-        //TODO write data into db
-    }
 
     private static void findCommand(SlashCommandEvent event){
         try {
             SQLCommands cmd = new SQLCommands();
             var opt = event.getOptions();
-            if(opt.size() > 1){
-                event.reply("Too many arguments!").queue();
+            if(opt.size() > 1 || opt.size() == 0){
+                event.reply("Argument error").queue();
                 return;
             }
             switch(opt.get(0).getName()){
@@ -56,8 +63,6 @@ public class FrakCommandHandler extends ListenerAdapter {
                     getResult(event, resultSet2);
                     break;
             }
-
-            event.reply("It worked!").queue();
         } catch (SQLException | ClassNotFoundException | JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -79,6 +84,18 @@ public class FrakCommandHandler extends ListenerAdapter {
         }
         event.getChannel().sendMessage(builder.build()).queue();
     }
+    private static void addCommand(SlashCommandEvent event) throws SQLException, JSONException, IOException, ParseException, ClassNotFoundException {
+        SQLCommands cmd = new SQLCommands();
+        var options = event.getOptions();
+        cmd.insertData(options.get(0).getAsString(), options.get(1).getAsMember().getId(), Integer.parseInt(options.get(2).getAsString()));
+        ResultSet resultSet = cmd.selectData("*", "frak","name = '" + options.get(0).getAsString()+"'");
+        if(resultSet.next() == false){
+            event.reply("Die Daten wurden erfolgreich eingefügt!").queue();
+            return;
+        }
+        event.reply("Die Daten wurden erfolgreich eingefügt!").queue();
+        getResult(event, resultSet);
+    }
 
     private static void getResult(SlashCommandEvent event, ResultSet resultSet) throws SQLException {
         StringBuilder builder = new StringBuilder();
@@ -91,8 +108,12 @@ public class FrakCommandHandler extends ListenerAdapter {
             builder.append("Leader: " + event.getGuild()
                     .retrieveMemberById(resultSet.getString("leader_dc_id")).complete()
                     .getAsMention() + "\n");
-            builder.append("Abzüge: " + resultSet.getInt("discount") + "%");
+            builder.append("Abzuege: " + resultSet.getInt("discount") + "%");
+        }else{
+            event.reply("Es konnten keine Daten gefunden werden!").queue();
+            return;
         }
+        resultSet.close();
         items.setDescription(builder.toString());
         event.getChannel().sendMessage(items.build()).queue();
     }
