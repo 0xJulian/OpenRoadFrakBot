@@ -1,0 +1,7 @@
+{
+  "connectionString": {
+    "url": "jdbc:mysql://localhost:3306/fraktionen",
+    "user": "frak",
+    "password": "*haJRq-fZKKTtW[L"
+  }
+}

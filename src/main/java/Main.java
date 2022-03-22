@@ -34,7 +34,7 @@ public class Main extends ListenerAdapter {
                         .addSubcommands(createSubcommandData("add", "Fügt eine neue Fraktion zum Partnerprogramm hinzu")
                                 .addOptions(new OptionData(OptionType.STRING, "name", "Name der Fraktion").setRequired(true))
                                 .addOptions(new OptionData(OptionType.USER, "leader", "Tag des Leaders").setRequired(true))
-                                .addOptions(new OptionData(OptionType.INTEGER, "discount", "Abzug in %").setRequired(true))
+                                .addOptions(new OptionData(OptionType.STRING, "discount", "Abzug in %").setRequired(true))
                         )
                        .addSubcommands(createSubcommandData("find", "Sucht nach vorhandenen Fraktionen")
                                .addOptions(new OptionData(OptionType.STRING, "name", "Name der Fraktion").setRequired(false))

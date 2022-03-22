@@ -18,7 +18,18 @@ public class SQLCommands {
         String url = obd.get("url").toString();
         String user = obd.get("user").toString();
         String pw = obd.get("password").toString();
+        //Class.forName("com.mysql.jdbc.Driver");
         this.connection = DriverManager.getConnection(url, user, pw);
+        }
+
+        public void insertData(String name, String id, int discount) throws SQLException {
+            PreparedStatement ps = this.connection.prepareStatement("INSERT INTO frak(name, leader_dc_id, discount) VALUES(?, ?, ?)");
+            ps.setString(1, name);
+            ps.setString(2, id);
+            ps.setInt(3, discount);
+
+            ps.execute();
+            ps.close();
         }
 
         public ResultSet selectData(String selector, String table, String condition) throws SQLException {
